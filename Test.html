@@ -1,0 +1,1737 @@
+platefor<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEST - Évaluation des Connaissances</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+        body{background:#ffffff;color:#333;line-height:1.6;padding:10px;min-height:100vh}
+        
+        /* Header principal */
+        .header{text-align:center;margin-bottom:15px;padding:12px;background:linear-gradient(135deg,#1E5799 0%,#207CCA 51%,#2989D8 100%);border-radius:6px;border:2px solid #FFD700}
+        .header h1{font-size:1.8rem;color:#FFD700;text-shadow:0 0 10px rgba(255,215,0,0.5);margin-bottom:5px}
+        .header p{color:#fff;font-size:1rem}
+        
+        /* Conteneur principal */
+        .main-container{display:flex;gap:15px;max-width:1200px;margin:0 auto}
+        
+        /* Section séries */
+        .series-section{flex:2}
+        .series-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin-bottom:20px}
+        .series-card{background-color:#f8f9fa;border-radius:6px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,0.1);border:2px solid #1E5799;transition:transform 0.3s;cursor:pointer}
+        .series-card:hover{transform:translateY(-2px)}
+        .series-card h2{color:#1E5799;text-align:center;margin-bottom:8px;font-size:1.3rem;border-bottom:2px solid #1E5799;padding-bottom:6px}
+        .series-info{color:#1E5799;margin-bottom:8px}
+        .series-info p{margin-bottom:4px;display:flex;justify-content:space-between;font-size:0.9rem}
+        .series-info span{font-weight:600}
+        
+        /* Section essais récents */
+        .recent-tests-section{flex:1}
+        .recent-tests-card{background-color:#f8f9fa;border-radius:6px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,0.1);border:2px solid #1E5799;margin-bottom:15px}
+        .recent-tests-card h2{color:#1E5799;text-align:center;margin-bottom:10px;font-size:1.3rem}
+        .recent-test-item{padding:8px;margin-bottom:8px;border-radius:5px;background:#fff;border:1px solid #ddd;cursor:pointer;transition:all 0.3s}
+        .recent-test-item:hover{background-color:#e9ecef;transform:translateX(3px)}
+        .test-date{font-size:0.8rem;color:#666;margin-bottom:4px}
+        .test-score{display:flex;justify-content:space-between;align-items:center}
+        .score-value{font-weight:bold;font-size:1.1rem}
+        
+        /* Boutons */
+        .btn{padding:6px 12px;background-color:#1E5799;color:#fff;border:none;border-radius:5px;cursor:pointer;transition:all 0.3s;font-weight:600;font-size:0.85rem;border:1px solid #FFD700}
+        .btn:hover:not(:disabled){background-color:#FFD700;color:#1E5799;transform:scale(1.05)}
+        .btn:disabled{background-color:#ccc;cursor:not-allowed;opacity:0.6}
+        .btn-small{padding:4px 8px;font-size:0.75rem}
+        
+        /* Croix rouge à GAUCHE - LÉGÈREMENT AUGMENTÉE */
+        .close-btn{position:absolute;top:3px;left:5px;width:16px;height:16px;border-radius:50%;background:#dc3545;color:white;border:none;font-size:0.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;z-index:100;box-shadow:0 1px 2px rgba(0,0,0,0.2);padding:0;line-height:1}
+        .close-btn:hover{background:#c82333;transform:scale(1.1);box-shadow:0 2px 3px rgba(0,0,0,0.3)}
+        .exam-header{position:relative}
+        .exam-container .close-btn{top:3px;left:5px}
+        .result-container .close-btn,.question-review .close-btn{top:3px;left:5px;width:16px;height:16px;font-size:0.8rem}
+        .exam-header-item:first-child{text-align:left;padding-left:25px;position:relative;z-index:1}
+        @media (max-width: 768px){.close-btn{top:3px;left:5px;width:14px;height:14px;font-size:0.7rem}.exam-header-item:first-child{padding-left:22px}}
+        
+        /* Barre de progression */
+        .progress-container{height:8px;background-color:#e9ecef;border-radius:4px;margin:4px 0;overflow:hidden}
+        .progress-fill{height:100%;border-radius:4px;transition:width 0.5s ease}
+        .progress-low{background-color:#dc3545}
+        .progress-medium{background-color:#ffc107}
+        .progress-high{background-color:#28a745}
+        
+        /* Interface examen */
+        .exam-container{display:none;max-width:800px;margin:0 auto;position:relative}
+        .exam-header{display:flex;justify-content:space-between;align-items:center;padding:8px 15px;background:linear-gradient(135deg,#1E5799 0%,#207CCA 51%,#2989D8 100%);border-radius:6px;color:white;margin-bottom:10px;height:45px;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
+        .exam-header-item{font-size:0.95rem;font-weight:bold;white-space:nowrap;flex:1;text-align:center}
+        .exam-header-item:first-child{text-align:left}
+        .exam-header-item:last-child{text-align:right}
+        .timer{font-weight:bold}
+        .timer.warning{color:#FFD700;animation:pulse 1s infinite}
+        @keyframes pulse{0%{opacity:1}50%{opacity:0.7}100%{opacity:1}}
+        
+        /* Question */
+        .question-container{background-color:#fff;border-radius:6px;padding:15px;margin-bottom:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1);border:2px solid #1E5799;position:relative}
+        .question-image{width:100%;max-height:220px;height:auto;object-fit:contain;margin-bottom:15px;border-radius:6px;border:1px solid #ddd;background-color:#f8f9fa}
+        .question-text{font-size:1rem;margin-bottom:15px;font-weight:600;text-align:center;color:#000;padding:12px;background-color:#f8f9fa;border-radius:6px;border-left:4px solid #FFD700}
+        
+        /* Numéro de question comme dans l'image */
+        .question-number{display:block;font-size:1.1rem;font-weight:bold;color:#1E5799;margin-bottom:5px;text-align:left;padding-left:5px}
+        
+        /* Boutons audio */
+        .audio-controls{display:flex;justify-content:center;gap:15px;margin:15px 0}
+        .audio-btn{width:60px;height:60px;border-radius:8px;display:flex;justify-content:center;align-items:center;background-color:#1E5799;color:#FFD700;border:2px solid #FFD700;cursor:pointer;font-weight:bold;font-size:1rem;transition:all 0.3s}
+        .audio-btn:hover{background-color:#FFD700;color:#1E5799;transform:scale(1.1)}
+        .audio-btn.playing{background-color:#FFD700;color:#1E5799}
+        
+        /* Options en rectangles optimisés - 3 OPTIONS A, B, C */
+        .simple-options{display:grid;grid-template-columns:1fr;gap:3px;margin-top:3px}
+        .simple-option{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background-color:#fff;border-radius:3px;border:1px solid #ddd;transition:all 0.3s;cursor:pointer;color:#333;font-size:0.95rem;min-height:45px;width:100%;box-shadow:0 1px 2px rgba(0,0,0,0.05)}
+        .simple-option:hover{border-color:#1E5799;background-color:#f0f8ff;transform:translateY(-1px)}
+        .option-label{font-size:1rem;font-weight:600;text-align:left;margin-left:0;flex:1;padding-left:3px}
+        .option-value{font-size:1rem;font-weight:bold;color:#1E5799;background-color:#f8f9fa;padding:4px 8px;border-radius:3px;min-width:40px;text-align:center;border:1px solid #1E5799;margin-right:3px}
+        .simple-option.selected{background-color:#1E5799;border-color:#1E5799;border-width:1px}
+        .simple-option.selected .option-label{color:#fff;font-weight:bold}
+        .simple-option.selected .option-value{background-color:#FFD700;color:#1E5799;border-color:#FFD700;border-width:1px}
+        
+        /* Contrôles examen - BOUTON SUIVANT SEULEMENT */
+        .exam-controls{display:flex;justify-content:flex-end;margin-top:15px}
+        .hidden{display:none}
+        .answer-warning{color:#dc3545;text-align:center;margin-top:10px;font-weight:bold;display:none;background-color:rgba(220,53,69,0.1);padding:8px;border-radius:6px;border:1px solid #dc3545}
+        .unanswered{border:2px solid #dc3545 !important}
+        
+        /* Résultats */
+        .result-container{display:none;text-align:center;background-color:#fff;border-radius:8px;padding:20px;margin:15px auto;max-width:800px;box-shadow:0 3px 10px rgba(0,0,0,0.1);border:2px solid #1E5799;position:relative}
+        .result-container h2{color:#1E5799;margin-bottom:15px;font-size:1.4rem}
+        .result-score{font-size:2rem;font-weight:bold;margin-bottom:15px}
+        .result-percentage{font-size:1.5rem;font-weight:bold;margin:15px 0}
+        .result-message{margin-bottom:15px;font-size:1.1rem;font-weight:bold;padding:12px;border-radius:6px}
+        .result-message.passed{background-color:#d4edda;color:#155724;border:1px solid #c3e6cb}
+        .result-message.failed{background-color:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
+        .result-actions{display:flex;justify-content:center;gap:10px;margin-top:20px}
+        .detailed-results{margin-top:20px;text-align:left}
+        
+        /* BOUTONS RONDS POUR LES RÉSULTATS */
+        .result-buttons-container{display:flex;justify-content:center;gap:15px;margin:20px 0;flex-wrap:wrap}
+        .result-btn{width:45px;height:45px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:1.1rem;cursor:pointer;transition:all 0.3s;border:2px solid white;box-shadow:0 2px 4px rgba(0,0,0,0.2);position:relative}
+        .result-btn:hover{transform:scale(1.1)}
+        .result-btn.correct{background-color:#28a745;color:white}
+        .result-btn.incorrect{background-color:#dc3545;color:white}
+        .result-btn.empty{background-color:#6c757d;color:white}
+        .result-btn-number{position:absolute;top:-5px;right:-5px;background:#1E5799;color:white;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:bold}
+        
+        /* CORRECTION COMME DANS L'IMAGE */
+        .correction-container{background-color:#fff;border-radius:6px;padding:12px;margin-bottom:15px;box-shadow:0 1px 4px rgba(0,0,0,0.1);border:1px solid #ddd}
+        .correction-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid #eee}
+        .correction-header h3{color:#333;font-size:1.1rem;margin:0}
+        .correction-question{font-size:1rem;margin-bottom:10px;color:#333;line-height:1.4}
+        .correction-answers{display:grid;grid-template-columns:1fr;gap:6px}
+        .correction-answer-row{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:3px;border:1px solid #ddd}
+        .correction-answer-text{font-size:0.95rem;font-weight:500}
+        .correction-answer-letter{font-weight:bold;font-size:0.95rem;color:#1E5799;background-color:#f8f9fa;padding:3px 8px;border-radius:3px;border:1px solid #1E5799}
+        .correction-explanation{margin-top:10px;padding:8px;background-color:#f8f9fa;border-radius:3px;border-left:3px solid #1E5799;font-size:0.9rem;color:#333;line-height:1.4}
+        
+        /* Graphique de performance */
+        .performance-chart{margin-top:10px}
+        .chart-item{display:flex;align-items:center;margin-bottom:6px;padding:4px;cursor:pointer;border-radius:4px;transition:background 0.3s}
+        .chart-item:hover{background-color:#e9ecef}
+        .chart-label{width:50px;font-size:0.85rem;font-weight:500}
+        .chart-bar-container{flex:1;background:#eee;border-radius:3px;overflow:hidden;height:16px;margin:0 8px}
+        .chart-bar{height:100%;transition:width 0.5s}
+        .chart-value{width:35px;text-align:right;font-weight:bold;font-size:0.85rem}
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container{flex-direction:column}
+            .exam-header{height:auto;padding:8px 10px}
+            .exam-header-item{font-size:0.85rem}
+            .question-image{max-height:180px;height:auto}
+            .btn{padding:5px 10px;font-size:0.8rem}
+            .simple-option{padding:6px 10px;min-height:40px;font-size:0.9rem}
+            .audio-btn{width:55px;height:55px;font-size:0.95rem}
+            .result-btn{width:40px;height:40px;font-size:1rem}
+            .result-btn-number{width:18px;height:18px;font-size:0.7rem}
+        }
+    </style>
+</head>
+<body>
+    <!-- En-tête principal -->
+    <div class="header" id="header">
+        <h1>📝 TEST</h1>
+        <p>Évaluation des Connaissances Générales</p>
+    </div>
+    
+    <!-- Conteneur principal avec deux colonnes -->
+    <div class="main-container">
+        <!-- Colonne gauche : Séries -->
+        <div class="series-section">
+            <h2 style="color:#1E5799; margin-bottom:12px; text-align:center">NIVEAUX DE TEST</h2>
+            <div class="series-container" id="series-container">
+                <div class="series-card" data-series="T1">
+                    <h2>NIVEAU 1</h2>
+                    <div class="series-info">
+                        <p>Niveau: <span>Débutant</span></p>
+                        <p>Questions: <span>10</span></p>
+                        <p>Temps: <span>10 min</span></p>
+                        <p>Réussite: <span>7/10</span></p>
+                    </div>
+                    <button class="btn start-btn" data-series="T1">COMMENCER</button>
+                </div>
+                <div class="series-card" data-series="T2">
+                    <h2>NIVEAU 2</h2>
+                    <div class="series-info">
+                        <p>Niveau: <span>Intermédiaire</span></p>
+                        <p>Questions: <span>10</span></p>
+                        <p>Temps: <span>10 min</span></p>
+                        <p>Réussite: <span>7/10</span></p>
+                    </div>
+                    <button class="btn start-btn" data-series="T2">COMMENCER</button>
+                </div>
+                <div class="series-card" data-series="T3">
+                    <h2>NIVEAU 3</h2>
+                    <div class="series-info">
+                        <p>Niveau: <span>Avancé</span></p>
+                        <p>Questions: <span>10</span></p>
+                        <p>Temps: <span>10 min</span></p>
+                        <p>Réussite: <span>7/10</span></p>
+                    </div>
+                    <button class="btn start-btn" data-series="T3">COMMENCER</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Colonne droite : Essais récents -->
+        <div class="recent-tests-section">
+            <div class="recent-tests-card">
+                <h2>📊 ESSAI RÉCENT</h2>
+                <div id="recent-tests-list">
+                    <p style="text-align:center; color:#666; padding:15px" id="no-recent-tests">Aucun test récent</p>
+                </div>
+            </div>
+            
+            <div class="recent-tests-card">
+                <h2>📈 PERFORMANCE</h2>
+                <div id="performance-chart" class="performance-chart">
+                    <p style="text-align:center; color:#666; padding:15px">Commencez un test pour voir vos performances</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Interface d'examen (cachée par défaut) -->
+    <div class="exam-container" id="exam-container">
+        <!-- Croix rouge à gauche -->
+        <button class="close-btn" id="exam-close-btn">×</button>
+        
+        <div class="exam-header">
+            <div class="exam-header-item" id="exam-series-title">Niveau 1</div>
+            <div class="exam-header-item" id="question-counter">Question 1/10</div>
+            <div class="exam-header-item timer" id="timer-display">⏱️ <span id="timer">10:00</span></div>
+        </div>
+        
+        <div class="question-container">
+            <img src="" class="question-image" id="question-image">
+            <div class="question-number" id="question-number">1</div>
+            <div class="question-text" id="question-text">Texte de la question</div>
+            
+            <div class="audio-controls">
+                <div class="audio-btn" id="audio-fr" title="Audio Français">FR</div>
+            </div>
+            
+            <!-- OPTIONS A, B, C seulement -->
+            <div class="simple-options" id="options-container">
+                <div class="simple-option" data-value="A">
+                    <span class="option-label" id="option-text-a">Option A</span>
+                    <span class="option-value">(A)</span>
+                </div>
+                <div class="simple-option" data-value="B">
+                    <span class="option-label" id="option-text-b">Option B</span>
+                    <span class="option-value">(B)</span>
+                </div>
+                <div class="simple-option" data-value="C">
+                    <span class="option-label" id="option-text-c">Option C</span>
+                    <span class="option-value">(C)</span>
+                </div>
+            </div>
+            
+            <div class="answer-warning" id="answer-warning">⚠️ Veuillez répondre avant de continuer</div>
+        </div>
+        
+        <!-- CONTROLES EXAMEN - BOUTON SUIVANT SEULEMENT -->
+        <div class="exam-controls">
+            <button class="btn" id="next-btn">Suivant ▶</button>
+        </div>
+    </div>
+    
+    <!-- Résultats de l'examen -->
+    <div class="result-container" id="result-container">
+        <!-- Croix rouge à gauche -->
+        <button class="close-btn" id="result-close-btn">×</button>
+        
+        <h2>📋 RÉSULTATS <span id="result-series"></span></h2>
+        <div class="result-score" id="result-score">0/10</div>
+        <div class="result-percentage" id="result-percentage">0%</div>
+        
+        <div class="progress-container">
+            <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+        
+        <p class="result-message" id="result-message"></p>
+        
+        <!-- BOUTONS RONDS VERT/ROUGE POUR LES RÉSULTATS -->
+        <div class="result-buttons-container" id="result-buttons-container">
+            <!-- Les boutons ronds seront générés ici -->
+        </div>
+        
+        <!-- CORRECTION COMME DANS L'IMAGE -->
+        <div class="detailed-results" id="detailed-results">
+            <h3 style="color:#1E5799; margin-bottom:15px; text-align:center">📝 CORRECTION</h3>
+            <!-- La correction sera générée ici -->
+        </div>
+        
+        <div class="result-actions">
+            <button class="btn" id="retry-btn">🔄 Recommencer</button>
+            <button class="btn" id="next-series-btn">➡ Niveau Suivant</button>
+            <button class="btn" id="return-btn">🏠 Accueil</button>
+        </div>
+    </div>
+
+    <script>
+    // Données des séries avec 3 options A, B, C
+    let seriesData = {
+        T1: {
+            questions: [
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "La limitation de vitesse est désormais de 50 km/h",
+                        B: "Fin de la limitation de vitesse spécifique",
+                        C: "Vitesse minimum obligatoire"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau signifie la fin de la limitation de vitesse spécifique."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Zone piétonne interdite aux véhicules",
+                        B: "Passage piéton, ralentissez et cédez le passage",
+                        C: "Fin de zone piétonne"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau indique un passage piéton, où vous devez ralentir et céder le passage."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Route non prioritaire",
+                        B: "Vous êtes sur une route prioritaire",
+                        C: "Fin de route prioritaire"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau indique que vous êtes sur une route prioritaire."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Virage à gauche",
+                        B: "Virage dangereux à droite",
+                        C: "Route en cul-de-sac"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau indique un virage dangereux à droite."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Zone de travaux, soyez prudent",
+                        B: "Stationnement interdit",
+                        C: "Limitation de vitesse à 20 km/h"
+                    },
+                    correctAnswer: "A",
+                    explanation: "Ce panneau indique une zone de travaux, soyez prudent."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1501700493788-fa1a4fc9fe62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Vous avez la priorité à l'intersection",
+                        B: "Priorité à droite, cédez le passage aux véhicules venant de droite",
+                        C: "Obligation de s'arrêter"
+                    },
+                    correctAnswer: "A",
+                    explanation: "Ce panneau indique que vous avez la priorité à l'intersection."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Interdiction de circuler pour tous les véhicules",
+                        B: "Circulation interdite aux camions",
+                        C: "Circulation interdite aux véhicules légers"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau indique que la circulation est interdite aux camions."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Virage à gauche dangereux",
+                        B: "Obligation de tourner à gauche",
+                        C: "Virage en épingle à droite"
+                    },
+                    correctAnswer: "A",
+                    explanation: "Ce panneau indique un virage à gauche dangereux."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Route secondaire",
+                        B: "Fin de route prioritaire",
+                        C: "Route à sens unique"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau indique la fin de route prioritaire."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1501700493788-fa1a4fc9fe62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Klaxon obligatoire",
+                        B: "Interdiction de klaxonner",
+                        C: "Zone de bruit autorisée"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau indique l'interdiction de klaxonner."
+                }
+            ]
+        },
+        T2: {
+            questions: [
+                {
+                    text: "STOP. Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Obligation de ralentir",
+                        B: "Obligation de s'arrêter",
+                        C: "Passage prioritaire"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Le panneau STOP signifie l'obligation de s'arrêter complètement."
+                },
+                {
+                    text: "30. Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1501700493788-fa1a4fc9fe62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Il est interdit de rouler à moins de 30 km/h",
+                        B: "Vitesse maximum autorisée : 30 km/h",
+                        C: "Zone à vitesse réduite recommandée"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau indique une vitesse maximum autorisée de 30 km/h."
+                },
+                {
+                    text: "CÉDEZ LE PASSAGE. Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Vous devez ralentir et vous arrêter à l'intersection",
+                        B: "Vous devez céder le passage aux véhicules sur la route principale",
+                        C: "Vous avez la priorité"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau signifie que vous devez céder le passage aux véhicules sur la route principale."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Entrée interdite à tous les véhicules",
+                        B: "Dépassement interdit",
+                        C: "Obligation de tourner à droite"
+                    },
+                    correctAnswer: "A",
+                    explanation: "Ce panneau signifie l'entrée interdite à tous les véhicules."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Tourner à gauche est interdit",
+                        B: "Obligation de tourner à droite",
+                        C: "Interdiction de faire demi-tour"
+                    },
+                    correctAnswer: "A",
+                    explanation: "Ce panneau signifie que tourner à gauche est interdit."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Stationnement autorisé pour une durée limitée",
+                        B: "Stationnement interdit",
+                        C: "Stationnement réservé aux résidents"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau signifie que le stationnement est interdit."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Fin de la zone de danger",
+                        B: "Présence d'un danger ou d'un risque",
+                        C: "Route fermée"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau triangulaire indique la présence d'un danger ou d'un risque."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Route à double sens de circulation",
+                        B: "Route à sens unique, vous ne pouvez aller que dans la direction indiquée",
+                        C: "Vous devez tourner à gauche"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau indique une route à sens unique."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1501700493788-fa1a4fc9fe62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Dépassement interdit",
+                        B: "Dépassement autorisé uniquement pour les motos",
+                        C: "Fin d'interdiction de dépasser"
+                    },
+                    correctAnswer: "A",
+                    explanation: "Ce panneau signifie que le dépassement est interdit."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "La chaussée s'élargit",
+                        B: "Chaussée rétrécie",
+                        C: "Travaux en cours"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau indique que la chaussée se rétrécit."
+                }
+            ]
+        },
+        T3: {
+            questions: [
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Stationnement interdit",
+                        B: "Zone de stationnement autorisée",
+                        C: "Arrêt minute"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau indique une zone de stationnement autorisée."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1501700493788-fa1a4fc9fe62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Circulation interdite à tous les véhicules",
+                        B: "Interdiction de tourner à droite",
+                        C: "Voie réservée"
+                    },
+                    correctAnswer: "A",
+                    explanation: "Ce panneau signifie la circulation interdite à tous les véhicules."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Route en pente",
+                        B: "Route glissante, ralentissez",
+                        C: "Dépassement autorisé"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau indique que la route est glissante, il faut ralentir."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Pont fixe",
+                        B: "Pont mobile, risque d'ouverture",
+                        C: "Travaux sur le pont"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau indique un pont mobile avec risque d'ouverture."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Route en mauvais état",
+                        B: "Dos d'âne, ralentissez",
+                        C: "Zone de ralentissement autorisé"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau indique un dos d'âne, il faut ralentir."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Passage piéton interdit",
+                        B: "Accès interdit aux piétons",
+                        C: "Zone piétonne"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau signifie l'accès interdit aux piétons."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Stationnement obligatoire",
+                        B: "Arrêt d'urgence autorisé",
+                        C: "Point de ravitaillement"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau indique un arrêt d'urgence autorisé."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Zone de chasse",
+                        B: "Danger, traversée d'animaux sauvages",
+                        C: "Passage interdit aux véhicules lourds"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau indique un danger de traversée d'animaux sauvages."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1501700493788-fa1a4fc9fe62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Station-service à proximité",
+                        B: "Fin de la route",
+                        C: "Point de contrôle technique"
+                    },
+                    correctAnswer: "A",
+                    explanation: "Ce panneau indique une station-service à proximité."
+                },
+                {
+                    text: "Que signifie ce panneau ?",
+                    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                    options: {
+                        A: "Obligation de faire demi-tour",
+                        B: "Interdiction de faire demi-tour",
+                        C: "Route en cul-de-sac"
+                    },
+                    correctAnswer: "B",
+                    explanation: "Ce panneau signifie l'interdiction de faire demi-tour."
+                }
+            ]
+        }
+    };
+
+    // Variables globales
+    let unlockedSeries = { T1: true, T2: true, T3: true };
+    let recentTests = JSON.parse(localStorage.getItem('recentTests')) || [];
+    let currentSeries = 'T1';
+    let currentQuestion = 1;
+    let currentReviewQuestion = 1;
+    let timerInterval;
+    let timeLeft = 10 * 60;
+    let selectedAnswers = {};
+    let examScore = 0;
+    let audioPlayer = null;
+    let isAudioPlaying = false;
+    let canModifyAnswers = true;
+
+    // Texte audio pour les questions
+    const audioQuestions = {
+        T1: {
+            1: "Question 1: Que signifie ce panneau? Options: A: La limitation de vitesse est désormais de 50 km/h, B: Fin de la limitation de vitesse spécifique, C: Vitesse minimum obligatoire",
+            2: "Question 2: Que signifie ce panneau? Options: A: Zone piétonne interdite aux véhicules, B: Passage piéton, ralentissez et cédez le passage, C: Fin de zone piétonne",
+            3: "Question 3: Que signifie ce panneau? Options: A: Route non prioritaire, B: Vous êtes sur une route prioritaire, C: Fin de route prioritaire",
+            4: "Question 4: Que signifie ce panneau? Options: A: Virage à gauche, B: Virage dangereux à droite, C: Route en cul-de-sac",
+            5: "Question 5: Que signifie ce panneau? Options: A: Zone de travaux, soyez prudent, B: Stationnement interdit, C: Limitation de vitesse à 20 km/h",
+            6: "Question 6: Que signifie ce panneau? Options: A: Vous avez la priorité à l'intersection, B: Priorité à droite, cédez le passage aux véhicules venant de droite, C: Obligation de s'arrêter",
+            7: "Question 7: Que signifie ce panneau? Options: A: Interdiction de circuler pour tous les véhicules, B: Circulation interdite aux camions, C: Circulation interdite aux véhicules légers",
+            8: "Question 8: Que signifie ce panneau? Options: A: Virage à gauche dangereux, B: Obligation de tourner à gauche, C: Virage en épingle à droite",
+            9: "Question 9: Que signifie ce panneau? Options: A: Route secondaire, B: Fin de route prioritaire, C: Route à sens unique",
+            10: "Question 10: Que signifie ce panneau? Options: A: Klaxon obligatoire, B: Interdiction de klaxonner, C: Zone de bruit autorisée"
+        },
+        T2: {
+            1: "Question 1: STOP. Que signifie ce panneau? Options: A: Obligation de ralentir, B: Obligation de s'arrêter, C: Passage prioritaire",
+            2: "Question 2: 30. Que signifie ce panneau? Options: A: Il est interdit de rouler à moins de 30 km/h, B: Vitesse maximum autorisée : 30 km/h, C: Zone à vitesse réduite recommandée",
+            3: "Question 3: CÉDEZ LE PASSAGE. Que signifie ce panneau? Options: A: Vous devez ralentir et vous arrêter à l'intersection, B: Vous devez céder le passage aux véhicules sur la route principale, C: Vous avez la priorité",
+            4: "Question 4: Que signifie ce panneau? Options: A: Entrée interdite à tous les véhicules, B: Dépassement interdit, C: Obligation de tourner à droite",
+            5: "Question 5: Que signifie ce panneau? Options: A: Tourner à gauche est interdit, B: Obligation de tourner à droite, C: Interdiction de faire demi-tour",
+            6: "Question 6: Que signifie ce panneau? Options: A: Stationnement autorisé pour une durée limitée, B: Stationnement interdit, C: Stationnement réservé aux résidents",
+            7: "Question 7: Que signifie ce panneau? Options: A: Fin de la zone de danger, B: Présence d'un danger ou d'un risque, C: Route fermée",
+            8: "Question 8: Que signifie ce panneau? Options: A: Route à double sens de circulation, B: Route à sens unique, vous ne pouvez aller que dans la direction indiquée, C: Vous devez tourner à gauche",
+            9: "Question 9: Que signifie ce panneau? Options: A: Dépassement interdit, B: Dépassement autorisé uniquement pour les motos, C: Fin d'interdiction de dépasser",
+            10: "Question 10: Que signifie ce panneau? Options: A: La chaussée s'élargit, B: Chaussée rétrécie, C: Travaux en cours"
+        },
+        T3: {
+            1: "Question 1: Que signifie ce panneau? Options: A: Stationnement interdit, B: Zone de stationnement autorisée, C: Arrêt minute",
+            2: "Question 2: Que signifie ce panneau? Options: A: Circulation interdite à tous les véhicules, B: Interdiction de tourner à droite, C: Voie réservée",
+            3: "Question 3: Que signifie ce panneau? Options: A: Route en pente, B: Route glissante, ralentissez, C: Dépassement autorisé",
+            4: "Question 4: Que signifie ce panneau? Options: A: Pont fixe, B: Pont mobile, risque d'ouverture, C: Travaux sur le pont",
+            5: "Question 5: Que signifie ce panneau? Options: A: Route en mauvais état, B: Dos d'âne, ralentissez, C: Zone de ralentissement autorisé",
+            6: "Question 6: Que signifie ce panneau? Options: A: Passage piéton interdit, B: Accès interdit aux piétons, C: Zone piétonne",
+            7: "Question 7: Que signifie ce panneau? Options: A: Stationnement obligatoire, B: Arrêt d'urgence autorisé, C: Point de ravitaillement",
+            8: "Question 8: Que signifie ce panneau? Options: A: Zone de chasse, B: Danger, traversée d'animaux sauvages, C: Passage interdit aux véhicules lourds",
+            9: "Question 9: Que signifie ce panneau? Options: A: Station-service à proximité, B: Fin de la route, C: Point de contrôle technique",
+            10: "Question 10: Que signifie ce panneau? Options: A: Obligation de faire demi-tour, B: Interdiction de faire demi-tour, C: Route en cul-de-sac"
+        }
+    };
+
+    // Initialisation
+    function initApp() {
+        setupEventListeners();
+        updateSeriesAccess();
+        loadRecentTests();
+        updatePerformanceChart();
+    }
+
+    function setupEventListeners() {
+        // Boutons de démarrage
+        document.querySelectorAll('.start-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                currentSeries = this.dataset.series;
+                startExam(currentSeries);
+            });
+        });
+
+        // Croix pour retour/fermer
+        document.getElementById('exam-close-btn').addEventListener('click', returnToMain);
+        document.getElementById('result-close-btn').addEventListener('click', returnToMain);
+
+        // Navigation dans l'examen
+        document.getElementById('next-btn').addEventListener('click', () => {
+            if (currentQuestion < 10) {
+                if (!isQuestionAnswered()) {
+                    showAnswerWarning();
+                    return;
+                }
+                document.getElementById('answer-warning').style.display = 'none';
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                if (!isQuestionAnswered()) {
+                    showAnswerWarning();
+                    return;
+                }
+                finishExam();
+            }
+        });
+
+        // Boutons des résultats
+        document.getElementById('retry-btn').addEventListener('click', () => {
+            startExam(currentSeries);
+        });
+
+        document.getElementById('next-series-btn').addEventListener('click', () => {
+            const nextSeries = getNextSeries(currentSeries);
+            if (nextSeries) {
+                startExam(nextSeries);
+            } else {
+                returnToMain();
+            }
+        });
+
+        document.getElementById('return-btn').addEventListener('click', returnToMain);
+
+        // Options de réponse
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.simple-option')) {
+                const option = e.target.closest('.simple-option');
+                const selectedValue = option.dataset.value;
+                
+                // Désélectionner toutes les options
+                document.querySelectorAll('.simple-option').forEach(el => {
+                    el.classList.remove('selected');
+                    el.style.backgroundColor = '#fff';
+                    el.style.borderColor = '#ddd';
+                    el.querySelector('.option-label').style.color = '#333';
+                    el.querySelector('.option-value').style.backgroundColor = '#f8f9fa';
+                });
+                
+                // Appliquer le style sélectionné
+                option.classList.add('selected');
+                option.style.backgroundColor = '#1E5799';
+                option.style.borderColor = '#1E5799';
+                option.querySelector('.option-label').style.color = '#fff';
+                const value = option.querySelector('.option-value');
+                value.style.backgroundColor = '#FFD700';
+                value.style.color = '#1E5799';
+                
+                // Enregistrer la réponse
+                selectedAnswers[`q${currentQuestion}`] = selectedValue;
+                
+                document.getElementById('answer-warning').style.display = 'none';
+            }
+        });
+
+        // Contrôle audio français
+        document.getElementById('audio-fr').addEventListener('click', playAudio);
+    }
+
+    function playAudio() {
+        // Arrêter l'audio en cours
+        if (audioPlayer && window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+            audioPlayer = null;
+            isAudioPlaying = false;
+            document.getElementById('audio-fr').classList.remove('playing');
+        }
+        
+        const questionData = getQuestionData(currentQuestion);
+        if (!questionData) return;
+        
+        // Créer le texte audio
+        let audioText = audioQuestions[currentSeries] && audioQuestions[currentSeries][currentQuestion] 
+            ? audioQuestions[currentSeries][currentQuestion] 
+            : `Question ${currentQuestion}: ${questionData.text} Options: A: ${questionData.options.A}, B: ${questionData.options.B}, C: ${questionData.options.C}`;
+        
+        // Utiliser l'API de synthèse vocale du navigateur
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(audioText);
+            utterance.lang = 'fr-FR';
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            
+            // Mettre à jour le bouton audio
+            const button = document.getElementById('audio-fr');
+            button.classList.add('playing');
+            
+            utterance.onstart = () => {
+                isAudioPlaying = true;
+            };
+            
+            utterance.onend = () => {
+                isAudioPlaying = false;
+                button.classList.remove('playing');
+            };
+            
+            utterance.onerror = () => {
+                isAudioPlaying = false;
+                button.classList.remove('playing');
+                console.error('Erreur de synthèse vocale');
+            };
+            
+            window.speechSynthesis.speak(utterance);
+            audioPlayer = utterance;
+        } else {
+            alert("La synthèse vocale n'est pas supportée par votre navigateur.");
+        }
+    }
+
+    function isQuestionAnswered() {
+        return !!selectedAnswers[`q${currentQuestion}`];
+    }
+
+    function showAnswerWarning() {
+        const warning = document.getElementById('answer-warning');
+        warning.style.display = 'block';
+        document.getElementById('question-text').classList.add('unanswered');
+        setTimeout(() => {
+            document.getElementById('question-text').classList.remove('unanswered');
+        }, 2000);
+    }
+
+    function updateSeriesAccess() {
+        document.querySelectorAll('.series-card').forEach(card => {
+            const button = card.querySelector('.start-btn');
+            card.classList.remove('locked');
+            button.disabled = false;
+            button.textContent = 'COMMENCER';
+        });
+    }
+
+    function startExam(series) {
+        currentSeries = series;
+        currentQuestion = 1;
+        selectedAnswers = {};
+        examScore = 0;
+        canModifyAnswers = true;
+        
+        // Arrêter l'audio
+        if (audioPlayer && window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+            audioPlayer = null;
+            isAudioPlaying = false;
+            document.getElementById('audio-fr').classList.remove('playing');
+        }
+        
+        // Mettre à jour l'interface
+        document.getElementById('exam-series-title').textContent = `Niveau ${series.slice(1)}`;
+        document.getElementById('header').style.display = 'none';
+        document.querySelector('.main-container').style.display = 'none';
+        document.getElementById('exam-container').style.display = 'block';
+        document.getElementById('result-container').style.display = 'none';
+        document.getElementById('answer-warning').style.display = 'none';
+        
+        startTimer();
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const questionData = getQuestionData(currentQuestion);
+        
+        if (questionData) {
+            const questionImage = document.getElementById('question-image');
+            if (questionData.image && questionData.image !== "") {
+                questionImage.src = questionData.image;
+                questionImage.style.display = 'block';
+            } else {
+                questionImage.style.display = 'none';
+            }
+            
+            // Numéro et texte de la question
+            document.getElementById('question-number').textContent = `${currentQuestion}`;
+            document.getElementById('question-text').textContent = questionData.text;
+            
+            // Mettre à jour les options A, B, C
+            document.getElementById('option-text-a').textContent = questionData.options.A;
+            document.getElementById('option-text-b').textContent = questionData.options.B;
+            document.getElementById('option-text-c').textContent = questionData.options.C;
+        }
+        
+        // Réinitialiser le style
+        document.querySelectorAll('.simple-option').forEach(el => {
+            el.classList.remove('selected');
+            el.style.backgroundColor = '#fff';
+            el.style.borderColor = '#ddd';
+            const label = el.querySelector('.option-label');
+            if (label) label.style.color = '#333';
+            const value = el.querySelector('.option-value');
+            if (value) value.style.backgroundColor = '#f8f9fa';
+        });
+        
+        // Restaurer les réponses
+        restoreSelectedAnswers();
+        
+        // Mettre à jour le compteur
+        updateQuestionCounter();
+    }
+
+    function restoreSelectedAnswers() {
+        const answer = selectedAnswers[`q${currentQuestion}`];
+        if (answer) {
+            const element = document.querySelector(`.simple-option[data-value="${answer}"]`);
+            if (element) {
+                element.classList.add('selected');
+                element.style.backgroundColor = '#1E5799';
+                element.style.borderColor = '#1E5799';
+                const label = element.querySelector('.option-label');
+                if (label) label.style.color = '#fff';
+                const value = element.querySelector('.option-value');
+                if (value) {
+                    value.style.backgroundColor = '#FFD700';
+                    value.style.color = '#1E5799';
+                }
+            }
+        }
+    }
+
+    function getQuestionData(questionNum) {
+        if (!seriesData[currentSeries]) return null;
+        return seriesData[currentSeries].questions[questionNum - 1];
+    }
+
+    function updateQuestionCounter() {
+        document.getElementById('question-counter').textContent = `Question ${currentQuestion}/10`;
+    }
+
+    function startTimer() {
+        clearInterval(timerInterval);
+        timeLeft = 10 * 60;
+        updateTimerDisplay();
+        timerInterval = setInterval(function() {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                finishExam();
+                return;
+            }
+            updateTimerDisplay();
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('timer').textContent = `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        
+        if (timeLeft <= 60) {
+            document.getElementById('timer-display').classList.add('warning');
+        } else {
+            document.getElementById('timer-display').classList.remove('warning');
+        }
+    }
+
+    function finishExam() {
+        clearInterval(timerInterval);
+        examScore = calculateScore();
+        const percentage = Math.round((examScore / 10) * 100);
+        const passed = examScore >= 7;
+        
+        // Sauvegarder le test récent
+        saveRecentTest(percentage, passed);
+        
+        // Afficher les résultats
+        displayResults(percentage, passed);
+        
+        // Mettre à jour l'interface
+        document.getElementById('exam-container').style.display = 'none';
+        document.getElementById('result-container').style.display = 'block';
+        updateSeriesAccess();
+        loadRecentTests();
+        updatePerformanceChart();
+    }
+
+    function calculateScore() {
+        let score = 0;
+        for (let i = 1; i <= 10; i++) {
+            const questionData = getQuestionData(i);
+            if (!questionData) continue;
+            
+            const answer = selectedAnswers[`q${i}`];
+            if (answer === questionData.correctAnswer) {
+                score++;
+            }
+        }
+        return score;
+    }
+
+    function saveRecentTest(percentage, passed) {
+        const test = {
+            date: new Date().toLocaleDateString('fr-FR', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }),
+            series: `Niveau ${currentSeries.slice(1)}`,
+            score: examScore,
+            percentage: percentage,
+            passed: passed
+        };
+        
+        recentTests.unshift(test);
+        if (recentTests.length > 5) {
+            recentTests = recentTests.slice(0, 5);
+        }
+        
+        localStorage.setItem('recentTests', JSON.stringify(recentTests));
+    }
+
+    function loadRecentTests() {
+        if (recentTests.length === 0) {
+            document.getElementById('no-recent-tests').style.display = 'block';
+            return;
+        }
+        
+        document.getElementById('no-recent-tests').style.display = 'none';
+        const recentTestsList = document.getElementById('recent-tests-list');
+        recentTestsList.innerHTML = '';
+        
+        recentTests.forEach((test, index) => {
+            const testItem = document.createElement('div');
+            testItem.className = 'recent-test-item';
+            testItem.onclick = () => {
+                alert(`Détails du test ${test.series}\nScore: ${test.score}/10 (${test.percentage}%)\nDate: ${test.date}`);
+            };
+            
+            let progressClass = 'progress-low';
+            if (test.percentage >= 45 && test.percentage < 85) {
+                progressClass = 'progress-medium';
+            } else if (test.percentage >= 85) {
+                progressClass = 'progress-high';
+            }
+            
+            testItem.innerHTML = `
+                <div class="test-date">${test.date} - ${test.series}</div>
+                <div class="test-score">
+                    <span class="score-value">${test.score}/10</span>
+                    <span style="font-weight:bold; color:${test.passed ? '#28a745' : '#dc3545'}">${test.percentage}%</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-fill ${progressClass}" style="width:${test.percentage}%"></div>
+                </div>
+                <div style="text-align:center; margin-top:4px; font-size:0.75rem; color:${test.passed ? '#28a745' : '#dc3545'}">
+                    ${test.passed ? '✅ Réussi' : '❌ Échoué'}
+                </div>
+            `;
+            
+            recentTestsList.appendChild(testItem);
+        });
+    }
+
+    function updatePerformanceChart() {
+        const performanceChart = document.getElementById('performance-chart');
+        if (recentTests.length === 0) {
+            performanceChart.innerHTML = '<p style="text-align:center; color:#666; padding:15px">Commencez un test pour voir vos performances</p>';
+            return;
+        }
+        
+        let html = '<div class="performance-chart">';
+        recentTests.forEach((test, index) => {
+            const percentage = test.percentage;
+            let color = '#dc3545';
+            if (percentage >= 45 && percentage < 85) {
+                color = '#ffc107';
+            } else if (percentage >= 85) {
+                color = '#28a745';
+            }
+            
+            html += `
+                <div class="chart-item" onclick="alert('Test ${test.series}: ${test.score}/10 (${test.percentage}%)')">
+                    <div class="chart-label">${test.series}</div>
+                    <div class="chart-bar-container">
+                        <div class="chart-bar" style="width:${percentage}%; background:${color}"></div>
+                    </div>
+                    <div class="chart-value" style="color:${color}">${percentage}%</div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        performanceChart.innerHTML = html;
+    }
+
+    function displayResults(percentage, passed) {
+        document.getElementById('result-series').textContent = `Niveau ${currentSeries.slice(1)}`;
+        document.getElementById('result-score').textContent = `${examScore}/10`;
+        document.getElementById('result-percentage').textContent = `${percentage}%`;
+        
+        let percentageColor = '#dc3545';
+        let progressClass = 'progress-low';
+        
+        if (percentage >= 45 && percentage < 85) {
+            percentageColor = '#ffc107';
+            progressClass = 'progress-medium';
+        } else if (percentage >= 85) {
+            percentageColor = '#28a745';
+            progressClass = 'progress-high';
+        }
+        
+        document.getElementById('result-percentage').style.color = percentageColor;
+        const progressFill = document.getElementById('progress-fill');
+        progressFill.style.width = `${percentage}%`;
+        progressFill.className = `progress-fill ${progressClass}`;
+        progressFill.style.backgroundColor = percentageColor;
+        
+        document.getElementById('result-score').style.color = passed ? '#28a745' : '#dc3545';
+        
+        const messageElement = document.getElementById('result-message');
+        if (passed) {
+            messageElement.textContent = '🎉 Félicitations! Vous avez réussi avec moins de 4 fautes.';
+            messageElement.style.color = '#155724';
+            messageElement.className = 'result-message passed';
+            document.getElementById('next-series-btn').style.display = 'inline-block';
+        } else {
+            messageElement.textContent = `📝 Vous avez fait ${10 - examScore} fautes. Il faut moins de 4 fautes pour passer.`;
+            messageElement.style.color = '#721c24';
+            messageElement.className = 'result-message failed';
+            document.getElementById('next-series-btn').style.display = 'none';
+        }
+        
+        // Générer les boutons ronds
+        generateResultButtons();
+        
+        // Générer la correction
+        generateCorrection();
+    }
+
+    function generateResultButtons() {
+        const container = document.getElementById('result-buttons-container');
+        container.innerHTML = '';
+        
+        for (let i = 1; i <= 10; i++) {
+            const questionData = getQuestionData(i);
+            const button = document.createElement('div');
+            button.className = 'result-btn';
+            
+            const answer = selectedAnswers[`q${i}`];
+            const isCorrect = answer === questionData.correctAnswer;
+            
+            if (isCorrect) {
+                button.className = 'result-btn correct';
+                button.textContent = '✓';
+            } else {
+                button.className = 'result-btn incorrect';
+                button.textContent = '✗';
+            }
+            
+            // Ajouter le numéro de question
+            const numberSpan = document.createElement('span');
+            numberSpan.className = 'result-btn-number';
+            numberSpan.textContent = i;
+            button.appendChild(numberSpan);
+            
+            // Ajouter l'événement click pour voir la correction
+            button.onclick = () => {
+                showCorrectionForQuestion(i);
+            };
+            
+            container.appendChild(button);
+        }
+    }
+
+    function generateCorrection() {
+        const detailedResults = document.getElementById('detailed-results');
+        detailedResults.innerHTML = '<h3 style="color:#1E5799; margin-bottom:15px; text-align:center">📝 CORRECTION</h3>';
+        
+        for (let i = 1; i <= 10; i++) {
+            const questionData = getQuestionData(i);
+            const correctionItem = document.createElement('div');
+            correctionItem.className = 'correction-container';
+            
+            const answer = selectedAnswers[`q${i}`];
+            const userAnswer = answer ? `${answer} (${questionData.options[answer]})` : "Non répondue";
+            const correctAnswer = `${questionData.correctAnswer} (${questionData.options[questionData.correctAnswer]})`;
+            const isCorrect = answer === questionData.correctAnswer;
+            
+            correctionItem.innerHTML = `
+                <div class="correction-header">
+                    <h3>Question ${i}</h3>
+                    <span style="color:${isCorrect ? '#28a745' : '#dc3545'}; font-weight:bold">
+                        ${isCorrect ? '✓ Correct' : '✗ Incorrect'}
+                    </span>
+                </div>
+                <div class="correction-question">${questionData.text}</div>
+                <div class="correction-answers">
+                    <div class="correction-answer-row" style="background-color:${isCorrect ? '#d4edda' : '#f8d7da'}; border-color:${isCorrect ? '#c3e6cb' : '#f5c6cb'}">
+                        <span class="correction-answer-text">Votre réponse</span>
+                        <span class="correction-answer-letter">${userAnswer.split('(')[0].trim()}</span>
+                    </div>
+                    <div class="correction-answer-row" style="background-color:#d4edda; border-color:#c3e6cb">
+                        <span class="correction-answer-text">Réponse correcte</span>
+                        <span class="correction-answer-letter">${correctAnswer.split('(')[0].trim()}</span>
+                    </div>
+                </div>
+                <div class="correction-explanation">
+                    ${questionData.explanation || "Explication de la réponse correcte."}
+                </div>
+            `;
+            
+            detailedResults.appendChild(correctionItem);
+        }
+    }
+
+    function showCorrectionForQuestion(questionNum) {
+        const questionData = getQuestionData(questionNum);
+        if (!questionData) return;
+        
+        const correctionModal = document.createElement('div');
+        correctionModal.style.position = 'fixed';
+        correctionModal.style.top = '0';
+        correctionModal.style.left = '0';
+        correctionModal.style.width = '100%';
+        correctionModal.style.height = '100%';
+        correctionModal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+        correctionModal.style.display = 'flex';
+        correctionModal.style.justifyContent = 'center';
+        correctionModal.style.alignItems = 'center';
+        correctionModal.style.zIndex = '1000';
+        
+        const answer = selectedAnswers[`q${questionNum}`];
+        const isCorrect = answer === questionData.correctAnswer;
+        
+        correctionModal.innerHTML = `
+            <div style="background:white; border-radius:8px; padding:20px; max-width:500px; width:90%; max-height:80vh; overflow-y:auto;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 style="color:#1E5799; margin:0">Question ${questionNum}</h3>
+                    <button onclick="this.closest('div[style*=\"position: fixed\"]').remove()" 
+                            style="background:#dc3545; color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; font-size:1.2rem">
+                        ×
+                    </button>
+                </div>
+                <div style="margin-bottom:10px; font-weight:500">${questionData.text}</div>
+                <div style="margin:15px 0; padding:10px; background-color:${isCorrect ? '#d4edda' : '#f8d7da'}; border-radius:6px; border:1px solid ${isCorrect ? '#c3e6cb' : '#f5c6cb'}">
+                    <strong>${isCorrect ? '✓ Correct' : '✗ Incorrect'}</strong>
+                </div>
+                <div style="padding:10px; background-color:#f8f9fa; border-radius:6px; margin-top:10px;">
+                    <strong>Explication :</strong><br>
+                    ${questionData.explanation || "Explication de la réponse correcte."}
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(correctionModal);
+        
+        correctionModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.remove();
+            }
+        });
+    }
+
+    function getNextSeries(current) {
+        const series = ['T1', 'T2', 'T3'];
+        const currentIndex = series.indexOf(current);
+        return currentIndex < series.length - 1 ? series[currentIndex + 1] : null;
+    }
+
+    function returnToMain() {
+        if (audioPlayer && window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+            audioPlayer = null;
+            isAudioPlaying = false;
+            document.getElementById('audio-fr').classList.remove('playing');
+        }
+        
+        document.getElementById('header').style.display = 'block';
+        document.querySelector('.main-container').style.display = 'flex';
+        document.getElementById('exam-container').style.display = 'none';
+        document.getElementById('result-container').style.display = 'none';
+        clearInterval(timerInterval);
+        
+        loadRecentTests();
+        updatePerformanceChart();
+    }
+
+    // Initialiser
+    document.addEventListener('DOMContentLoaded', initApp);
+function showCorrectionForQuestion(questionNum) {
+    const questionData = getQuestionData(questionNum);
+    if (!questionData) return;
+    
+    // Créer la modale de correction
+    const correctionModal = document.createElement('div');
+    correctionModal.style.position = 'fixed';
+    correctionModal.style.top = '0';
+    correctionModal.style.left = '0';
+    correctionModal.style.width = '100%';
+    correctionModal.style.height = '100%';
+    correctionModal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+    correctionModal.style.display = 'flex';
+    correctionModal.style.justifyContent = 'center';
+    correctionModal.style.alignItems = 'center';
+    correctionModal.style.zIndex = '1000';
+    
+    // Déterminer si la réponse est correcte
+    let isCorrect = false;
+    let userAnswerSymbol = '';
+    let userAnswerText = '';
+    let correctAnswerSymbol = '';
+    let correctAnswerText = '';
+    
+    // Obtenir les réponses utilisateur et correctes selon le type de question
+    if (questionData.optionType === "type3") {
+        // Question à deux parties
+        const q1Answer = selectedAnswers[`q${questionNum}_1`];
+        const q2Answer = selectedAnswers[`q${questionNum}_2`];
+        
+        // Vérifier si correct
+        isCorrect = q1Answer === questionData.type3CorrectAnswer1 && 
+                   q2Answer === questionData.type3CorrectAnswer2;
+        
+        // Texte des réponses utilisateur
+        if (q1Answer && q2Answer) {
+            // Obtenir le texte pour chaque réponse
+            const q1Text = q1Answer === 'A' ? 
+                (questionData.type3Q1Text1 || 'OUI') : 
+                (questionData.type3Q1Text2 || 'NON');
+            const q2Text = q2Answer === 'C' ? 
+                (questionData.type3Q2Text1 || 'OUI') : 
+                (questionData.type3Q2Text2 || 'NON');
+            
+            userAnswerSymbol = `Partie 1: (${q1Answer}), Partie 2: (${q2Answer})`;
+            userAnswerText = `Partie 1: ${q1Text}, Partie 2: ${q2Text}`;
+        } else {
+            userAnswerSymbol = "Non répondue";
+            userAnswerText = "Non répondue";
+        }
+        
+        // Texte des réponses correctes
+        const correctQ1Text = questionData.type3CorrectAnswer1 === 'A' ? 
+            (questionData.type3Q1Text1 || 'OUI') : 
+            (questionData.type3Q1Text2 || 'NON');
+        const correctQ2Text = questionData.type3CorrectAnswer2 === 'C' ? 
+            (questionData.type3Q2Text1 || 'OUI') : 
+            (questionData.type3Q2Text2 || 'NON');
+        
+        correctAnswerSymbol = `Partie 1: (${questionData.type3CorrectAnswer1}), Partie 2: (${questionData.type3CorrectAnswer2})`;
+        correctAnswerText = `Partie 1: ${correctQ1Text}, Partie 2: ${correctQ2Text}`;
+        
+    } else if (questionData.optionType === "type4") {
+        // Question à choix multiples
+        const answer = selectedAnswers[`q${questionNum}`];
+        const options = {
+            A: questionData.type4Text1 || '',
+            B: questionData.type4Text2 || '',
+            C: questionData.type4Text3 || ""
+        };
+        
+        isCorrect = answer === questionData.correctAnswer;
+        
+        // Réponse utilisateur
+        if (answer) {
+            userAnswerSymbol = `(${answer})`;
+            userAnswerText = options[answer] || '';
+        } else {
+            userAnswerSymbol = "Non répondue";
+            userAnswerText = "Non répondue";
+        }
+        
+        // Réponse correcte
+        correctAnswerSymbol = `(${questionData.correctAnswer})`;
+        correctAnswerText = options[questionData.correctAnswer] || '';
+        
+    } else {
+        // Question OUI/NON
+        const answer = selectedAnswers[`q${questionNum}`];
+        
+        isCorrect = answer === questionData.correctAnswer;
+        
+        // Réponse utilisateur
+        if (answer) {
+            userAnswerSymbol = `(${answer})`;
+            userAnswerText = answer === 'A' ? 'OUI' : 'NON';
+        } else {
+            userAnswerSymbol = "Non répondue";
+            userAnswerText = "Non répondue";
+        }
+        
+        // Réponse correcte
+        correctAnswerSymbol = `(${questionData.correctAnswer})`;
+        correctAnswerText = questionData.correctAnswer === 'A' ? 'OUI' : 'NON';
+    }
+    
+    // Créer le contenu de la modale
+    correctionModal.innerHTML = `
+        <div style="background:white; border-radius:8px; padding:20px; max-width:500px; width:90%; max-height:80vh; overflow-y:auto; position:relative;">
+            <button id="close-correction-modal" 
+                    style="position:absolute; top:10px; right:10px; background:#dc3545; color:white; border:none; border-radius:50%; width:30px; height:30px; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center;">
+                ×
+            </button>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-right:20px;">
+                <h3 style="color:#1E5799; margin:0">📝 Correction Question ${questionNum}</h3>
+            </div>
+            
+            <div style="margin-bottom:15px; padding:12px; background-color:#f8f9fa; border-radius:6px; border-left:4px solid #1E5799;">
+                <strong style="color:#333;">Question :</strong><br>
+                ${questionData.text || ''}
+            </div>
+            
+            <div style="margin:15px 0; padding:12px; background-color:${isCorrect ? '#d4edda' : '#f8d7da'}; border-radius:6px; border:1px solid ${isCorrect ? '#c3e6cb' : '#f5c6cb'}">
+                <strong style="color:${isCorrect ? '#155724' : '#721c24'}; font-size:1.1rem;">
+                    ${isCorrect ? '✅ VOTRE RÉPONSE EST CORRECTE' : '❌ VOTRE RÉPONSE EST INCORRECTE'}
+                </strong>
+            </div>
+            
+            <!-- VOTRE RÉPONSE -->
+            <div style="margin:15px 0; padding:15px; background-color:#fff3cd; border-radius:6px; border:2px solid #ffc107;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <span style="font-weight:bold; color:#856404;">VOTRE RÉPONSE :</span>
+                </div>
+                <div style="background-color:white; padding:10px; border-radius:4px; margin-top:5px; border:1px solid #ffeaa7;">
+                    <div style="color:#dc3545; font-weight:bold; margin-bottom:5px;">
+                        ${userAnswerSymbol}
+                    </div>
+                    <div style="color:#333;">
+                        ${userAnswerText}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- RÉPONSE CORRECTE -->
+            <div style="margin:15px 0; padding:15px; background-color:#d4edda; border-radius:6px; border:2px solid #c3e6cb;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <span style="font-weight:bold; color:#155724;">RÉPONSE CORRECTE :</span>
+                </div>
+                <div style="background-color:white; padding:10px; border-radius:4px; margin-top:5px; border:1px solid #a3e4b8;">
+                    <div style="color:#28a745; font-weight:bold; margin-bottom:5px;">
+                        ${correctAnswerSymbol}
+                    </div>
+                    <div style="color:#333;">
+                        ${correctAnswerText}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Ajouter la modale au document
+    document.body.appendChild(correctionModal);
+    
+    // Ajouter l'événement de fermeture
+    const closeButton = document.getElementById('close-correction-modal');
+    closeButton.addEventListener('click', () => {
+        document.body.removeChild(correctionModal);
+    });
+    
+    // Fermer en cliquant en dehors de la modale
+    correctionModal.addEventListener('click', function(e) {
+        if (e.target === this) {
+            document.body.removeChild(correctionModal);
+        }
+    });
+    
+    // Empêcher la propagation des clics à l'intérieur de la modale
+    const modalContent = correctionModal.querySelector('div[style*="background:white"]');
+    modalContent.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+}
+// Sauvegarder l'état de l'examen dans le localStorage
+function saveExamState() {
+    const examState = {
+        currentSeries: currentSeries,
+        currentQuestion: currentQuestion,
+        selectedAnswers: selectedAnswers,
+        timeLeft: timeLeft,
+        examScore: examScore,
+        isExamActive: true
+    };
+    localStorage.setItem('examState', JSON.stringify(examState));
+}
+
+// Charger l'état de l'examen depuis le localStorage
+function loadExamState() {
+    const savedState = localStorage.getItem('examState');
+    if (savedState) {
+        const examState = JSON.parse(savedState);
+        
+        // Vérifier si un examen était en cours
+        if (examState.isExamActive) {
+            const resume = confirm("Un examen était en cours. Voulez-vous reprendre là où vous étiez ?");
+            if (resume) {
+                currentSeries = examState.currentSeries;
+                currentQuestion = examState.currentQuestion;
+                selectedAnswers = examState.selectedAnswers;
+                timeLeft = examState.timeLeft;
+                examScore = examState.examScore;
+                
+                // Redémarrer l'examen
+                startExam(currentSeries);
+                
+                // Restaurer la question actuelle
+                setTimeout(() => {
+                    currentQuestion = examState.currentQuestion;
+                    loadQuestion();
+                    updateQuestionCounter();
+                    
+                    // Redémarrer le timer avec le temps restant
+                    clearInterval(timerInterval);
+                    startTimerFromSavedTime();
+                }, 100);
+                
+                return true;
+            } else {
+                // Effacer l'état sauvegardé si l'utilisateur ne veut pas reprendre
+                clearExamState();
+            }
+        }
+    }
+    return false;
+}
+
+// Démarrer le timer à partir du temps sauvegardé
+function startTimerFromSavedTime() {
+    clearInterval(timerInterval);
+    updateTimerDisplay();
+    timerInterval = setInterval(function() {
+        timeLeft--;
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            finishExam();
+            return;
+        }
+        updateTimerDisplay();
+        saveExamState(); // Sauvegarder à chaque seconde
+    }, 1000);
+}
+
+// Effacer l'état de l'examen
+function clearExamState() {
+    localStorage.removeItem('examState');
+}
+
+// Modifier la fonction startExam pour sauvegarder l'état
+function startExam(series) {
+    currentSeries = series;
+    currentQuestion = 1;
+    selectedAnswers = {};
+    examScore = 0;
+    canModifyAnswers = true;
+    
+    // Arrêter l'audio
+    if (audioPlayer && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        audioPlayer = null;
+        isAudioPlaying = false;
+        document.getElementById('audio-fr').classList.remove('playing');
+    }
+    
+    // Mettre à jour l'interface
+    document.getElementById('exam-series-title').textContent = `Niveau ${series.slice(1)}`;
+    document.getElementById('header').style.display = 'none';
+    document.querySelector('.main-container').style.display = 'none';
+    document.getElementById('exam-container').style.display = 'block';
+    document.getElementById('result-container').style.display = 'none';
+    document.getElementById('answer-warning').style.display = 'none';
+    
+    // Sauvegarder l'état initial
+    saveExamState();
+    
+    // Démarrer le timer
+    startTimer();
+    loadQuestion();
+}
+
+// Modifier la fonction loadQuestion pour sauvegarder
+function loadQuestion() {
+    const questionData = getQuestionData(currentQuestion);
+    
+    if (questionData) {
+        const questionImage = document.getElementById('question-image');
+        if (questionData.image && questionData.image !== "") {
+            questionImage.src = questionData.image;
+            questionImage.style.display = 'block';
+        } else {
+            questionImage.style.display = 'none';
+        }
+        
+        // Numéro et texte de la question
+        document.getElementById('question-number').textContent = `${currentQuestion}`;
+        document.getElementById('question-text').textContent = questionData.text;
+        
+        // Mettre à jour les options A, B, C
+        document.getElementById('option-text-a').textContent = questionData.options.A;
+        document.getElementById('option-text-b').textContent = questionData.options.B;
+        document.getElementById('option-text-c').textContent = questionData.options.C;
+    }
+    
+    // Réinitialiser le style
+    document.querySelectorAll('.simple-option').forEach(el => {
+        el.classList.remove('selected');
+        el.style.backgroundColor = '#fff';
+        el.style.borderColor = '#ddd';
+        const label = el.querySelector('.option-label');
+        if (label) label.style.color = '#333';
+        const value = el.querySelector('.option-value');
+        if (value) value.style.backgroundColor = '#f8f9fa';
+    });
+    
+    // Restaurer les réponses
+    restoreSelectedAnswers();
+    
+    // Mettre à jour le compteur
+    updateQuestionCounter();
+    
+    // Sauvegarder après chargement de la question
+    saveExamState();
+}
+
+// Modifier l'écouteur d'événement pour les options
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.simple-option')) {
+        const option = e.target.closest('.simple-option');
+        const selectedValue = option.dataset.value;
+        
+        // Désélectionner toutes les options
+        document.querySelectorAll('.simple-option').forEach(el => {
+            el.classList.remove('selected');
+            el.style.backgroundColor = '#fff';
+            el.style.borderColor = '#ddd';
+            el.querySelector('.option-label').style.color = '#333';
+            el.querySelector('.option-value').style.backgroundColor = '#f8f9fa';
+        });
+        
+        // Appliquer le style sélectionné
+        option.classList.add('selected');
+        option.style.backgroundColor = '#1E5799';
+        option.style.borderColor = '#1E5799';
+        option.querySelector('.option-label').style.color = '#fff';
+        const value = option.querySelector('.option-value');
+        value.style.backgroundColor = '#FFD700';
+        value.style.color = '#1E5799';
+        
+        // Enregistrer la réponse
+        selectedAnswers[`q${currentQuestion}`] = selectedValue;
+        
+        document.getElementById('answer-warning').style.display = 'none';
+        
+        // Sauvegarder après sélection d'une réponse
+        saveExamState();
+    }
+});
+
+// Modifier la fonction finishExam pour effacer l'état
+function finishExam() {
+    clearInterval(timerInterval);
+    examScore = calculateScore();
+    const percentage = Math.round((examScore / 10) * 100);
+    const passed = examScore >= 7;
+    
+    // Sauvegarder le test récent
+    saveRecentTest(percentage, passed);
+    
+    // Effacer l'état de l'examen en cours
+    clearExamState();
+    
+    // Afficher les résultats
+    displayResults(percentage, passed);
+    
+    // Mettre à jour l'interface
+    document.getElementById('exam-container').style.display = 'none';
+    document.getElementById('result-container').style.display = 'block';
+    updateSeriesAccess();
+    loadRecentTests();
+    updatePerformanceChart();
+}
+
+// Modifier la fonction returnToMain pour effacer l'état
+function returnToMain() {
+    if (audioPlayer && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        audioPlayer = null;
+        isAudioPlaying = false;
+        document.getElementById('audio-fr').classList.remove('playing');
+    }
+    
+    // Effacer l'état de l'examen
+    clearExamState();
+    
+    document.getElementById('header').style.display = 'block';
+    document.querySelector('.main-container').style.display = 'flex';
+    document.getElementById('exam-container').style.display = 'none';
+    document.getElementById('result-container').style.display = 'none';
+    clearInterval(timerInterval);
+    
+    loadRecentTests();
+    updatePerformanceChart();
+}
+
+// Modifier la fonction initApp pour vérifier l'état sauvegardé
+function initApp() {
+    setupEventListeners();
+    updateSeriesAccess();
+    loadRecentTests();
+    updatePerformanceChart();
+    
+    // Vérifier si un examen était en cours
+    loadExamState();
+}
+
+// Initialiser
+document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
