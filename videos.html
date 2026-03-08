@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vidéos Explicatives - Code de la Route en Wolof</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #2c6fd1;
+            --dark-blue: #1a4b8c;
+            --danger-red: #e74c3c;
+            --success-green: #27ae60;
+            --warning-yellow: #f39c12;
+            --light-gray: #f5f7fa;
+            --dark-gray: #7f8c8d;
+            --shadow: 0 15px 30px rgba(0,0,0,0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: linear-gradient(135deg, #f5f7fa 0%, #e6f0ff 100%); color: #333; line-height: 1.6; min-height: 100vh; }
+        
+        /* Header */
+        header { 
+            text-align: center; 
+            margin: 20px; 
+            padding: 40px 20px; 
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue)); 
+            color: white; 
+            border-radius: 20px; 
+            box-shadow: var(--shadow); 
+            position: relative; 
+            overflow: hidden; 
+        }
+        header::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            height: 20px;
+            background: #ffcc00;
+            transform: rotate(-2deg);
+            z-index: 1;
+        }
+        h1 { font-size: 2.5rem; margin-bottom: 15px; text-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        
+        /* Container principal */
+        .main-container { 
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* Section Vidéo explicative */
+        .video-section {
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+        .video-section h2 {
+            color: var(--primary-blue);
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .video-section h2 i {
+            color: var(--danger-red);
+        }
+        
+        /* Accordeon */
+        .accordion-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .accordion-item {
+            background: var(--light-gray);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+        
+        .accordion-item:hover {
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+        
+        .accordion-header {
+            background: white;
+            padding: 25px 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+        }
+        
+        .accordion-header:hover {
+            background: #f8faff;
+        }
+        
+        .accordion-header.active {
+            border-bottom-color: var(--primary-blue);
+            background: linear-gradient(135deg, #ffffff, #f0f7ff);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+        }
+        
+        .header-left i {
+            font-size: 2.5rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(44, 111, 209, 0.1);
+            border-radius: 15px;
+            transition: var(--transition);
+        }
+        
+        .accordion-header:hover .header-left i {
+            transform: scale(1.1);
+        }
+        
+        .header-left h3 {
+            font-size: 1.8rem;
+            color: var(--dark-blue);
+            font-weight: 600;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .badge {
+            background: var(--success-green);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        
+        .badge i {
+            margin-right: 8px;
+        }
+        
+        .toggle-icon {
+            font-size: 2rem;
+            color: var(--primary-blue);
+            transition: var(--transition);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .accordion-header.active .toggle-icon {
+            transform: rotate(180deg);
+            color: var(--danger-red);
+        }
+        
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s ease-out;
+            background: var(--light-gray);
+        }
+        
+        .accordion-content.open {
+            max-height: 3000px;
+            transition: max-height 0.8s ease-in;
+        }
+        
+        .video-wrapper {
+            padding: 30px;
+        }
+        
+        /* GRILLE DE VIDÉOS */
+        .videos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+        
+        /* CARTE VIDÉO INDIVIDUELLE */
+        .video-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transition: var(--transition);
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+        
+        .video-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-blue);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            background: #f0f0f0;
+            overflow: hidden;
+        }
+        
+        /* Miniature YouTube */
+        .video-thumbnail {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: transform 0.5s ease;
+        }
+        
+        .video-card:hover .video-thumbnail {
+            transform: scale(1.05);
+        }
+        
+        /* Overlay avec bouton play */
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .video-card:hover .video-overlay {
+            opacity: 1;
+        }
+        
+        .play-btn {
+            background: rgba(255,255,255,0.95);
+            color: var(--primary-blue);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transform: scale(0.8);
+            transition: var(--transition);
+        }
+        
+        .video-card:hover .play-btn {
+            transform: scale(1);
+        }
+        
+        .play-btn:hover {
+            background: white;
+            transform: scale(1.1) !important;
+        }
+        
+        .play-btn i {
+            margin-right: 5px;
+        }
+        
+        /* Flèche YouTube */
+        .youtube-arrow {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(255,0,0,0.9);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 5;
+            transition: var(--transition);
+        }
+        
+        .video-card:hover .youtube-arrow {
+            background: #ff0000;
+            transform: translateX(5px);
+        }
+        
+        .youtube-arrow i {
+            font-size: 1rem;
+        }
+        
+        /* Info vidéo */
+        .video-info {
+            padding: 20px;
+            background: white;
+        }
+        
+        .video-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark-blue);
+            margin-bottom: 10px;
+        }
+        
+        .video-subtitle {
+            font-size: 1rem;
+            color: var(--dark-gray);
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .auto-ecole-badge {
+            background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+            color: white;
+            padding: 8px 15px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 3px 10px rgba(44, 111, 209, 0.3);
+        }
+        
+        .auto-ecole-badge i {
+            font-size: 1rem;
+        }
+        
+        /* Description principale du thème */
+        .theme-description {
+            margin: 0 0 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            color: var(--dark-gray);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            border-left: 5px solid var(--primary-blue);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        /* Footer */
+        footer { 
+            text-align: center; 
+            margin-top: 50px; 
+            padding: 25px; 
+            color: var(--dark-gray); 
+            font-size: 0.9rem; 
+            border-top: 1px solid #ddd; 
+        }
+        
+        /* Animations */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .accordion-item {
+            animation: slideIn 0.5s ease forwards;
+            opacity: 0;
+        }
+        .accordion-item:nth-child(1) { animation-delay: 0.1s; }
+        .accordion-item:nth-child(2) { animation-delay: 0.15s; }
+        .accordion-item:nth-child(3) { animation-delay: 0.2s; }
+        .accordion-item:nth-child(4) { animation-delay: 0.25s; }
+        .accordion-item:nth-child(5) { animation-delay: 0.3s; }
+        .accordion-item:nth-child(6) { animation-delay: 0.35s; }
+        .accordion-item:nth-child(7) { animation-delay: 0.4s; }
+        .accordion-item:nth-child(8) { animation-delay: 0.45s; }
+        .accordion-item:nth-child(9) { animation-delay: 0.5s; }
+        .accordion-item:nth-child(10) { animation-delay: 0.55s; }
+        .accordion-item:nth-child(11) { animation-delay: 0.6s; }
+        
+        /* OPTIMISATION TÉLÉPHONE */
+        @media (max-width: 768px) {
+            h1 { font-size: 1.8rem; }
+            
+            .video-section h2 { 
+                font-size: 1.3rem; 
+                gap: 8px;
+            }
+            
+            .accordion-header {
+                padding: 15px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .header-left {
+                width: 100%;
+                gap: 12px;
+            }
+            
+            .header-left i {
+                font-size: 1.8rem;
+                width: 45px;
+                height: 45px;
+            }
+            
+            .header-left h3 {
+                font-size: 1.2rem;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .badge {
+                font-size: 0.8rem;
+                padding: 5px 12px;
+            }
+            
+            .toggle-icon {
+                font-size: 1.5rem;
+            }
+            
+            .video-wrapper {
+                padding: 15px;
+            }
+            
+            .videos-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .theme-description {
+                font-size: 0.95rem;
+                padding: 15px;
+            }
+            
+            .play-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+            
+            .youtube-arrow {
+                padding: 5px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .video-title {
+                font-size: 1.1rem;
+            }
+            
+            .video-subtitle {
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .video-section {
+                padding: 12px;
+            }
+            
+            .accordion-header {
+                padding: 12px;
+            }
+            
+            .header-left i {
+                font-size: 1.5rem;
+                width: 40px;
+                height: 40px;
+            }
+            
+            .header-left h3 {
+                font-size: 1.1rem;
+            }
+            
+            .badge {
+                font-size: 0.7rem;
+                padding: 4px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header id="main-header">
+        <h1>Vidéos Explicatives du Code de la Route</h1>
+        <p class="description" id="header-description">Apprenez les règles de la circulation avec des explications claires en Wolof</p>
+    </header>
+    
+    <div class="main-container">
+        <!-- Section VIDÉO EXPLICATIVE AVEC MONITEUR -->
+        <div class="video-section">
+            <h2>
+                <i class="fas fa-video"></i>
+                VIDÉO EXPLICATIVE AVEC MONITEUR
+                <i class="fas fa-language"></i>
+            </h2>
+            <div class="accordion-container" id="accordion-container">
+                <!-- L'accordeon sera généré dynamiquement -->
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 Code de la Route - Tous droits réservés</p>
+    </footer>
+
+    <script>
+        // ============================================
+        // DONNÉES DES VIDÉOS - MISES À JOUR
+        // ============================================
+        // - Ajout de la vidéo BALISES
+        // - Suppression de PASSAGES À NIVEAU et VIDÉO CIRCULATION
+        // ============================================
+        
+        const videoData = [
+            { // THÈME 1 - DANGER (5 vidéos)
+                title: "DANGER",
+                icon: "fa-triangle-exclamation",
+                color: "#e74c3c",
+                description: "Explication complète des panneaux de danger (triangles rouges) par moniteur. Apprenez à reconnaître tous les panneaux qui alertent d'un danger sur la route.",
+                videos: [
+                    {
+                        youtubeId: "rQTTh8fKXVA",
+                        part: "PARTIE 1",
+                        description: "Introduction aux panneaux de danger"
+                    },
+                    {
+                        youtubeId: "U9irCJLbSl4",
+                        part: "PARTIE 2",
+                        description: "Les panneaux de danger les plus courants"
+                    },
+                    {
+                        youtubeId: "AiOYA3Gq9O8",
+                        part: "PARTIE 3",
+                        description: "Comment réagir face aux dangers"
+                    },
+                    {
+                        youtubeId: "vn8LCY72IHc",
+                        part: "PARTIE 4",
+                        description: "Cas pratiques et mises en situation"
+                    },
+                    {
+                        youtubeId: "emQpaLk2sfk",
+                        part: "PARTIE 5",
+                        description: "Récapitulatif et conseils du moniteur"
+                    }
+                ]
+            },
+            { // THÈME 2 - INTERDICTION (5 vidéos)
+                title: "INTERDICTION",
+                icon: "fa-ban",
+                color: "#c0392b",
+                description: "Les panneaux d'interdiction expliqués en détail (ronds blancs à bord rouge). Comprenez ce qui est interdit pour éviter les infractions.",
+                videos: [
+                    {
+                        youtubeId: "8Ukdv4TWtto",
+                        part: "PARTIE 1",
+                        description: "Les différents types d'interdiction"
+                    },
+                    {
+                        youtubeId: "zDBWlIRSi5U",
+                        part: "PARTIE 2",
+                        description: "Interdictions spécifiques et exceptions"
+                    },
+                    {
+                        youtubeId: "DaBKOG3SVIo",
+                        part: "PARTIE 3",
+                        description: "Cas pratiques sur route"
+                    },
+                    {
+                        youtubeId: "4gD4mQhKLuc",
+                        part: "PARTIE 4",
+                        description: "Récapitulatif et conseils"
+                    },
+                    {
+                        youtubeId: "uJH5U5vItlc",
+                        part: "PARTIE 5",
+                        description: "Questions fréquentes"
+                    }
+                ]
+            },
+            { // THÈME 3 - ARRÊT ET STATIONNEMENT (4 vidéos)
+                title: "ARRÊT ET STATIONNEMENT",
+                icon: "fa-parking",
+                color: "#d35400",
+                description: "Règles complètes d'arrêt et stationnement - Comment bien se garer en sécurité et respecter la réglementation.",
+                videos: [
+                    {
+                        youtubeId: "Smx0CgdGXH0",
+                        part: "PARTIE 1",
+                        description: "Les règles de base du stationnement"
+                    },
+                    {
+                        youtubeId: "m8NLaC6y0_k",
+                        part: "PARTIE 2",
+                        description: "Stationnement gênant et dangereux"
+                    },
+                    {
+                        youtubeId: "S2LNlOCLJWY",
+                        part: "PARTIE 3",
+                        description: "Stationnement en ville et hors agglomération"
+                    },
+                    {
+                        youtubeId: "HFDUKPnumwc",
+                        part: "PARTIE 4",
+                        description: "Récapitulatif et conseils pratiques"
+                    }
+                ]
+            },
+            { // THÈME 4 - OBLIGATION (2 vidéos)
+                title: "OBLIGATION",
+                icon: "fa-circle-check",
+                color: "#2980b9",
+                description: "Panneaux d'obligation - Les ronds bleus et leurs significations. Ce que vous devez absolument faire sur la route.",
+                videos: [
+                    {
+                        youtubeId: "1d3J8F1bal0",
+                        part: "PARTIE 1",
+                        description: "Introduction aux panneaux d'obligation"
+                    },
+                    {
+                        youtubeId: "I_tTt-4YqK0",
+                        part: "PARTIE 2",
+                        description: "Les différents types d'obligation"
+                    }
+                ]
+            },
+            { // THÈME 5 - PRIORITÉS (1 vidéo)
+                title: "PRIORITÉS",
+                icon: "fa-arrow-right-arrow-left",
+                color: "#f39c12",
+                description: "Toutes les règles de priorité - Qui passe en premier aux intersections, comment fonctionnent les stops et les cédez-le-passage.",
+                videos: [
+                    {
+                        youtubeId: "GIbFOxPlYIs",
+                        part: "PARTIE 1",
+                        description: "Vidéo explicative des règles de priorité"
+                    }
+                ]
+            },
+            { // THÈME 6 - INDICATION (1 vidéo)
+                title: "INDICATION",
+                icon: "fa-info-circle",
+                color: "#27ae60",
+                description: "Panneaux d'indication - Information, direction et services. Comment lire et comprendre les panneaux bleus carrés.",
+                videos: [
+                    {
+                        youtubeId: "jH1oacLB1Qs",
+                        part: "PARTIE 1",
+                        description: "Vidéo explicative des panneaux d'indication"
+                    }
+                ]
+            },
+            { // THÈME 7 - SIGNALISATION LUMINEUSE (1 vidéo)
+                title: "SIGNALISATION LUMINEUSE",
+                icon: "fa-lightbulb",
+                color: "#16a085",
+                description: "Feux tricolores et signaux lumineux expliqués simplement. Que faire à chaque couleur et aux feux spéciaux.",
+                videos: [
+                    {
+                        youtubeId: "VbNLOzIjzA4",
+                        part: "PARTIE 1",
+                        description: "Vidéo explicative de la signalisation lumineuse"
+                    }
+                ]
+            },
+            { // THÈME 8 - PANNEAUX TEMPORAIRES (1 vidéo)
+                title: "PANNEAUX TEMPORAIRES",
+                icon: "fa-hard-hat",
+                color: "#f1c40f",
+                description: "Travaux et situations temporaires - Panneaux jaunes et leurs significations. Comment réagir face à ces panneaux.",
+                videos: [
+                    {
+                        youtubeId: "T99XdmXrL5o",
+                        part: "PARTIE 1",
+                        description: "Vidéo explicative des panneaux temporaires"
+                    }
+                ]
+            },
+            { // THÈME 9 - BALISES (1 vidéo - AJOUTÉE)
+                title: "BALISES",
+                icon: "fa-location-dot",
+                color: "#2c3e50",
+                description: "Balisage routier - Guides et repères pour bien se positionner sur la route et anticiper les dangers.",
+                videos: [
+                    {
+                        youtubeId: "fxHgfCBmTbg",
+                        part: "PARTIE 1",
+                        description: "Vidéo explicative des balises"
+                    }
+                ]
+            },
+            { // THÈME 10 - MARQUAGE AU SOL (1 vidéo)
+                title: "MARQUAGE AU SOL",
+                icon: "fa-road",
+                color: "#7f8c8d",
+                description: "Lignes continues, discontinues, flèches et symboles peints sur la chaussée. Tout savoir sur le marquage au sol.",
+                videos: [
+                    {
+                        youtubeId: "_xSDEZjZoEI",
+                        part: "PARTIE 1",
+                        description: "Vidéo explicative du marquage au sol"
+                    }
+                ]
+            },
+            { // THÈME 11 - LES RONDS-POINTS (1 vidéo)
+                title: "LES RONDS-POINTS",
+                icon: "fa-rotate-right",
+                color: "#1abc9c",
+                description: "Comment aborder et circuler dans un rond-point en toute sécurité. Les règles de priorité et le positionnement.",
+                videos: [
+                    {
+                        youtubeId: "JY4PGbjAQY8",
+                        part: "PARTIE 1",
+                        description: "Vidéo explicative des ronds-points"
+                    }
+                ]
+            }
+        ];
+
+        // ============================================
+        // INITIALISATION
+        // ============================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            renderAccordion();
+        });
+
+        // ============================================
+        // FONCTION POUR OBTENIR LA MINIATURE YOUTUBE
+        // ============================================
+        
+        function getYouTubeThumbnail(videoId) {
+            return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+        }
+
+        // ============================================
+        // RENDU DE L'ACCORDEON
+        // ============================================
+
+        function renderAccordion() {
+            const container = document.getElementById('accordion-container');
+            container.innerHTML = '';
+
+            videoData.forEach((theme, index) => {
+                const item = document.createElement('div');
+                item.className = 'accordion-item';
+                
+                // Header
+                const header = document.createElement('div');
+                header.className = 'accordion-header';
+                header.setAttribute('data-index', index);
+                header.onclick = () => toggleAccordion(index);
+                
+                header.innerHTML = `
+                    <div class="header-left">
+                        <i class="fas ${theme.icon}" style="color: ${theme.color}; background: ${theme.color}20;"></i>
+                        <h3>${theme.title} (${theme.videos.length} vidéo${theme.videos.length > 1 ? 's' : ''})</h3>
+                    </div>
+                    <div class="header-right">
+                        <span class="badge">
+                            <i class="fas fa-language"></i> Wolof
+                        </span>
+                        <i class="fas fa-chevron-down toggle-icon"></i>
+                    </div>
+                `;
+                
+                // Content avec description et grille de vidéos
+                const content = document.createElement('div');
+                content.className = 'accordion-content';
+                content.id = `accordion-content-${index}`;
+                
+                // Générer la grille des vidéos
+                let videosHtml = '';
+                theme.videos.forEach(video => {
+                    const thumbnailUrl = getYouTubeThumbnail(video.youtubeId);
+                    const youtubeUrl = `https://www.youtube.com/watch?v=${video.youtubeId}`;
+                    
+                    videosHtml += `
+                        <div class="video-card" onclick="window.open('${youtubeUrl}', '_blank')">
+                            <div class="video-container">
+                                <div class="video-thumbnail" style="background-image: url('${thumbnailUrl}')"></div>
+                                <div class="video-overlay">
+                                    <div class="play-btn">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                </div>
+                                <div class="youtube-arrow">
+                                    <i class="fab fa-youtube"></i>
+                                    Regarder sur YouTube
+                                    <i class="fas fa-arrow-right"></i>
+                                </div>
+                            </div>
+                            <div class="video-info">
+                                <div class="video-title">${theme.title} ${video.part}</div>
+                                <div class="video-subtitle">${video.description}</div>
+                                <div class="auto-ecole-badge">
+                                    <i class="fas fa-graduation-cap"></i>
+                                    eAuto-ecole
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                content.innerHTML = `
+                    <div class="video-wrapper">
+                        <div class="theme-description">
+                            <i class="fas fa-info-circle" style="color: var(--primary-blue); margin-right: 10px;"></i>
+                            ${theme.description}
+                        </div>
+                        <div class="videos-grid">
+                            ${videosHtml}
+                        </div>
+                    </div>
+                `;
+                
+                item.appendChild(header);
+                item.appendChild(content);
+                container.appendChild(item);
+            });
+        }
+
+        // ============================================
+        // FONCTION POUR OUVRIR/FERMER L'ACCORDEON
+        // ============================================
+        
+        function toggleAccordion(index) {
+            const content = document.getElementById(`accordion-content-${index}`);
+            const header = document.querySelector(`.accordion-header[data-index="${index}"]`);
+            
+            // Fermer tous les autres
+            const allContents = document.querySelectorAll('.accordion-content');
+            const allHeaders = document.querySelectorAll('.accordion-header');
+            
+            if (!content.classList.contains('open')) {
+                // Si on ouvre un nouveau, on ferme tous les autres
+                allContents.forEach(c => {
+                    c.classList.remove('open');
+                });
+                
+                allHeaders.forEach(h => {
+                    h.classList.remove('active');
+                });
+                
+                // Puis on ouvre celui-ci
+                content.classList.add('open');
+                header.classList.add('active');
+            } else {
+                // Si c'est déjà ouvert, on le ferme
+                content.classList.remove('open');
+                header.classList.remove('active');
+            }
+        }
+
+        // Rendre la fonction disponible globalement
+        window.toggleAccordion = toggleAccordion;
+    </script>
+</body>
+</html>
